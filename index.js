@@ -1,4 +1,10 @@
 const displayController = (function () {
+	const gridSizing = {
+		small: 8,
+		medium: 16,
+		large: 32,
+	}
+
 	function setup() {
 		const body = document.querySelector('body')
 
@@ -7,22 +13,24 @@ const displayController = (function () {
 		body.appendChild(container)
 
 		const canvas = generateCanvas()
+		canvas.classList.add('small')
+
 		const controls = generateControls()
 		container.append(canvas, controls)
 
-		generateGrid()
+		generateGrid(gridSizing.small)
 	}
 
 	function generateCanvas() {
 		const canvas = document.createElement('section')
-		canvas.classList.add('canvas', 'small')
+		canvas.classList.add('canvas')
 		return canvas
 	}
 
-	function generateGrid() {
+	function generateGrid(size) {
 		const canvas = document.querySelector('.canvas')
-		for (let i = 0; i < 8; i++) {
-			for (let j = 0; j < 8; j++) {
+		for (let i = 0; i < size; i++) {
+			for (let j = 0; j < size; j++) {
 				const tile = document.createElement('div')
 				tile.setAttribute('class', 'tile')
 				canvas.appendChild(tile)
@@ -41,15 +49,38 @@ const displayController = (function () {
 		const container = document.createElement('article')
 		container.setAttribute('class', 'sizing')
 
-		const small = document.createElement('button')
-		small.textContent = 'Small'
-		const medium = document.createElement('button')
-		medium.textContent = 'Medium'
-		const large = document.createElement('button')
-		large.textContent = 'Large'
-		container.append(small, medium, large)
+		const sizes = ['Small', 'Medium', 'Large']
+		sizes.forEach(size => {
+			const button = document.createElement('button')
+			button.textContent = size
+			button.setAttribute('data-size', size.toLowerCase())
+			container.appendChild(button)
+		})
+
+		container.addEventListener('click', handleSizingClick)
 
 		return container
+	}
+
+	function handleSizingClick(e) {
+		const size = e.target.getAttribute('data-size')
+		if (!size) return
+
+		const oldCanvas = document.querySelector('.canvas')
+		const classes = oldCanvas.classList
+		if (size === classes[1]) {
+			// Same as curent size
+			return
+		}
+
+		const mainContainer = document.querySelector('.container')
+		mainContainer.removeChild(mainContainer.childNodes[0])
+
+		const canvas = generateCanvas()
+		canvas.classList.add(size)
+
+		mainContainer.prepend(canvas)
+		generateGrid(gridSizing[size])
 	}
 
 	return {
