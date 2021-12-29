@@ -5,6 +5,8 @@ const displayController = (function () {
 		large: 32,
 	}
 
+	let gridSize = gridSizing.small
+
 	function setup() {
 		const body = document.querySelector('body')
 
@@ -18,7 +20,7 @@ const displayController = (function () {
 		const controls = generateControls()
 		container.append(canvas, controls)
 
-		generateGrid(gridSizing.small)
+		generateGrid()
 	}
 
 	function generateCanvas() {
@@ -27,10 +29,10 @@ const displayController = (function () {
 		return canvas
 	}
 
-	function generateGrid(size) {
+	function generateGrid() {
 		const canvas = document.querySelector('.canvas')
-		for (let i = 0; i < size; i++) {
-			for (let j = 0; j < size; j++) {
+		for (let i = 0; i < gridSize; i++) {
+			for (let j = 0; j < gridSize; j++) {
 				const tile = document.createElement('div')
 				tile.setAttribute('class', 'tile')
 				canvas.appendChild(tile)
@@ -73,6 +75,7 @@ const displayController = (function () {
 			return
 		}
 
+		gridSize = gridSizing[size]
 		const mainContainer = document.querySelector('.container')
 		mainContainer.removeChild(mainContainer.childNodes[0])
 
@@ -80,7 +83,7 @@ const displayController = (function () {
 		canvas.classList.add(size)
 
 		mainContainer.prepend(canvas)
-		generateGrid(gridSizing[size])
+		generateGrid()
 	}
 
 	return {
