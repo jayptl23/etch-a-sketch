@@ -5,6 +5,10 @@ function colorFactory() {
 		mode = newMode
 	}
 
+	function getMode() {
+		return mode
+	}
+
 	function generateColor() {
 		switch (mode) {
 			case 'rainbow':
@@ -43,6 +47,7 @@ function colorFactory() {
 	return {
 		generateColor,
 		setMode,
+		getMode,
 	}
 }
 
@@ -94,7 +99,7 @@ const displayController = (function () {
 	function generateControls() {
 		const controls = document.createElement('section')
 		controls.setAttribute('class', 'controls')
-		controls.appendChild(generateCanvasSizing())
+		controls.append(generateCanvasSizing(), generateDrawingModes())
 		return controls
 	}
 
@@ -111,6 +116,23 @@ const displayController = (function () {
 		})
 
 		container.addEventListener('click', handleSizingClick)
+
+		return container
+	}
+
+	function generateDrawingModes() {
+		const container = document.createElement('article')
+		container.setAttribute('class', 'mode')
+
+		const modes = ['Rainbow', 'Grayscale', 'Erase']
+		modes.forEach(mode => {
+			const button = document.createElement('button')
+			button.textContent = mode
+			button.setAttribute('data-mode', mode.toLowerCase())
+			container.appendChild(button)
+		})
+
+		container.addEventListener('click', handleModeClick)
 
 		return container
 	}
@@ -141,6 +163,13 @@ const displayController = (function () {
 
 		mainContainer.prepend(canvas)
 		generateGrid()
+	}
+
+	function handleModeClick(e) {
+		const mode = e.target.getAttribute('data-mode')
+		if (!mode) return
+		if (colorMachine.getMode() === mode) return
+		colorMachine.setMode(mode)
 	}
 
 	return {
