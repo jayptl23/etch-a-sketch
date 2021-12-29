@@ -99,7 +99,10 @@ const displayController = (function () {
 	function generateControls() {
 		const controls = document.createElement('section')
 		controls.setAttribute('class', 'controls')
-		controls.append(generateCanvasSizing(), generateDrawingModes())
+		const clearButton = document.createElement('button')
+		clearButton.textContent = 'Clear'
+		clearButton.addEventListener('click', handleClearGrid)
+		controls.append(generateCanvasSizing(), generateDrawingModes(), clearButton)
 		return controls
 	}
 
@@ -155,11 +158,22 @@ const displayController = (function () {
 		}
 
 		gridSize = gridSizing[size]
+		clearGrid()
+	}
+
+	function clearGrid() {
 		const mainContainer = document.querySelector('.container')
 		mainContainer.removeChild(mainContainer.childNodes[0])
 
 		const canvas = generateCanvas()
-		canvas.classList.add(size)
+
+		let currGridSize // small, medium. large?
+		for (size in gridSizing) {
+			if (gridSizing[size] === gridSize) {
+				currGridSize = size
+			}
+		}
+		canvas.classList.add(currGridSize)
 
 		mainContainer.prepend(canvas)
 		generateGrid()
@@ -170,6 +184,10 @@ const displayController = (function () {
 		if (!mode) return
 		if (colorMachine.getMode() === mode) return
 		colorMachine.setMode(mode)
+	}
+
+	function handleClearGrid() {
+		clearGrid()
 	}
 
 	return {
