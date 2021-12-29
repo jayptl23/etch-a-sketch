@@ -1,3 +1,51 @@
+function colorFactory() {
+	let mode = 'rainbow'
+
+	function setMode(newMode) {
+		mode = newMode
+	}
+
+	function generateColor() {
+		switch (mode) {
+			case 'rainbow':
+				return rainbow()
+			case 'grayscale':
+				return grayscale()
+			case 'erase':
+				return clear()
+		}
+	}
+
+	function rainbow() {
+		const values = []
+		for (let i = 0; i < 4; i++) {
+			if (i === 3) {
+				values.push(Math.random() * 2)
+			} else {
+				values.push(Math.floor(Math.random() * 256))
+			}
+		}
+		return values
+	}
+
+	function grayscale() {
+		let num = Math.floor(Math.random() * 256)
+		while (num < 90 || num > 230) {
+			num = Math.floor(Math.random() * 256)
+		}
+		return [num, num, num, 1]
+	}
+
+	function clear() {
+		return [255, 255, 255, 0]
+	}
+
+	return {
+		generateColor,
+		setMode,
+	}
+}
+
 const displayController = (function () {
 	const gridSizing = {
 		small: 8,
@@ -6,6 +54,8 @@ const displayController = (function () {
 	}
 
 	let gridSize = gridSizing.small
+
+	const colorMachine = colorFactory()
 
 	function setup() {
 		const body = document.querySelector('body')
@@ -26,6 +76,7 @@ const displayController = (function () {
 	function generateCanvas() {
 		const canvas = document.createElement('section')
 		canvas.classList.add('canvas')
+		canvas.addEventListener('mouseover', handleTileHover)
 		return canvas
 	}
 
@@ -62,6 +113,12 @@ const displayController = (function () {
 		container.addEventListener('click', handleSizingClick)
 
 		return container
+	}
+
+	function handleTileHover(e) {
+		const target = e.target
+		if (!target.classList.contains('tile')) return
+		target.style.backgroundColor = `rgba(${colorMachine.generateColor().join(',')})`
 	}
 
 	function handleSizingClick(e) {
