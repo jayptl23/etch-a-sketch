@@ -1,3 +1,35 @@
+function gridFactory() {
+	const gridSizing = {
+		small: 8,
+		medium: 16,
+		large: 32,
+	}
+
+	let gridSize = gridSizing.small
+
+	function setGridSize(size) {
+		gridSize = gridSizing[size]
+	}
+
+	function getGridSize() {
+		return gridSize
+	}
+
+	function getKeyFromSize(size) {
+		for (key in gridSizing) {
+			if (gridSizing[key] === size) {
+				return key
+			}
+		}
+	}
+
+	return {
+		setGridSize,
+		getGridSize,
+		getKeyFromSize,
+	}
+}
+
 function colorFactory() {
 	let mode = 'rainbow'
 
@@ -52,15 +84,8 @@ function colorFactory() {
 }
 
 const displayController = (function () {
-	const gridSizing = {
-		small: 8,
-		medium: 16,
-		large: 32,
-	}
-
-	let gridSize = gridSizing.small
-
-	const colorMachine = colorFactory()
+	const gridController = gridFactory()
+	const colorController = colorFactory()
 
 	function setup() {
 		const body = document.querySelector('body')
@@ -87,6 +112,7 @@ const displayController = (function () {
 
 	function generateGrid() {
 		const canvas = document.querySelector('.canvas')
+		let gridSize = gridController.getGridSize()
 		for (let i = 0; i < gridSize; i++) {
 			for (let j = 0; j < gridSize; j++) {
 				const tile = document.createElement('div')
@@ -143,7 +169,7 @@ const displayController = (function () {
 	function handleTileHover(e) {
 		const target = e.target
 		if (!target.classList.contains('tile')) return
-		target.style.backgroundColor = `rgba(${colorMachine.generateColor().join(',')})`
+		target.style.backgroundColor = `rgba(${colorController.generateColor().join(',')})`
 	}
 
 	function handleSizingClick(e) {
@@ -157,7 +183,7 @@ const displayController = (function () {
 			return
 		}
 
-		gridSize = gridSizing[size]
+		gridController.setGridSize(size)
 		clearGrid()
 	}
 
@@ -167,13 +193,8 @@ const displayController = (function () {
 
 		const canvas = generateCanvas()
 
-		let currGridSize // small, medium. large?
-		for (size in gridSizing) {
-			if (gridSizing[size] === gridSize) {
-				currGridSize = size
-			}
-		}
-		canvas.classList.add(currGridSize)
+		let currGridClass = gridController.getKeyFromSize(gridController.getGridSize())
+		canvas.classList.add(currGridClass)
 
 		mainContainer.prepend(canvas)
 		generateGrid()
@@ -182,8 +203,8 @@ const displayController = (function () {
 	function handleModeClick(e) {
 		const mode = e.target.getAttribute('data-mode')
 		if (!mode) return
-		if (colorMachine.getMode() === mode) return
-		colorMachine.setMode(mode)
+		if (colorController.getMode() === mode) return
+		colorController.setMode(mode)
 	}
 
 	function handleClearGrid() {
