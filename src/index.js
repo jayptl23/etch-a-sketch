@@ -1,3 +1,5 @@
+import './style.css'
+
 function gridFactory() {
 	const gridSizing = {
 		small: 8,
@@ -16,7 +18,8 @@ function gridFactory() {
 	}
 
 	function getKeyFromSize(size) {
-		for (key in gridSizing) {
+		for (let key in gridSizing) {
+			console.log(key)
 			if (gridSizing[key] === size) {
 				return key
 			}
@@ -194,6 +197,7 @@ const displayController = (function () {
 		const canvas = generateCanvas()
 
 		let currGridClass = gridController.getKeyFromSize(gridController.getGridSize())
+		console.log('currGrideClass', currGridClass)
 		canvas.classList.add(currGridClass)
 
 		mainContainer.prepend(canvas)
