@@ -19,7 +19,6 @@ function gridFactory() {
 
 	function getKeyFromSize(size) {
 		for (let key in gridSizing) {
-			console.log(key)
 			if (gridSizing[key] === size) {
 				return key
 			}
@@ -50,8 +49,6 @@ function colorFactory() {
 				return rainbow()
 			case 'grayscale':
 				return grayscale()
-			case 'erase':
-				return clear()
 		}
 	}
 
@@ -75,10 +72,6 @@ function colorFactory() {
 		return [num, num, num, 1]
 	}
 
-	function clear() {
-		return [255, 255, 255, 0]
-	}
-
 	return {
 		generateColor,
 		setMode,
@@ -89,6 +82,9 @@ function colorFactory() {
 const displayController = (function () {
 	const gridController = gridFactory()
 	const colorController = colorFactory()
+
+	let activeSize
+	let activeMode
 
 	function setup() {
 		const body = document.querySelector('body')
@@ -102,6 +98,9 @@ const displayController = (function () {
 
 		const controls = generateControls()
 		container.append(canvas, controls)
+
+		activeSize.classList.add('active')
+		activeMode.classList.add('active')
 
 		generateGrid()
 	}
@@ -131,6 +130,7 @@ const displayController = (function () {
 		const clearButton = document.createElement('button')
 		clearButton.textContent = 'Clear'
 		clearButton.addEventListener('click', handleClearGrid)
+		clearButton.classList.add('clear')
 		controls.append(generateCanvasSizing(), generateDrawingModes(), clearButton)
 		return controls
 	}
@@ -139,11 +139,19 @@ const displayController = (function () {
 		const container = document.createElement('article')
 		container.setAttribute('class', 'sizing')
 
+		const label = document.createElement('p')
+		label.textContent = 'Grid Size'
+
+		container.appendChild(label)
+
 		const sizes = ['Small', 'Medium', 'Large']
 		sizes.forEach(size => {
 			const button = document.createElement('button')
 			button.textContent = size
 			button.setAttribute('data-size', size.toLowerCase())
+			if (size === 'Small') {
+				activeSize = button
+			}
 			container.appendChild(button)
 		})
 
@@ -156,11 +164,19 @@ const displayController = (function () {
 		const container = document.createElement('article')
 		container.setAttribute('class', 'mode')
 
+		const label = document.createElement('p')
+		label.textContent = 'Mode'
+
+		container.appendChild(label)
+
 		const modes = ['Rainbow', 'Grayscale', 'Erase']
 		modes.forEach(mode => {
 			const button = document.createElement('button')
 			button.textContent = mode
 			button.setAttribute('data-mode', mode.toLowerCase())
+			if (mode === 'Rainbow') {
+				activeMode = button
+			}
 			container.appendChild(button)
 		})
 
@@ -172,7 +188,11 @@ const displayController = (function () {
 	function handleTileHover(e) {
 		const target = e.target
 		if (!target.classList.contains('tile')) return
-		target.style.backgroundColor = `rgba(${colorController.generateColor().join(',')})`
+		if (colorController.getMode() === 'erase') {
+			target.removeAttribute('style')
+		} else {
+			target.style.backgroundColor = `rgba(${colorController.generateColor().join(',')})`
+		}
 	}
 
 	function handleSizingClick(e) {
@@ -186,6 +206,9 @@ const displayController = (function () {
 			return
 		}
 
+		activeSize.classList.toggle('active')
+		activeSize = e.target
+		activeSize.classList.toggle('active')
 		gridController.setGridSize(size)
 		clearGrid()
 	}
@@ -197,7 +220,6 @@ const displayController = (function () {
 		const canvas = generateCanvas()
 
 		let currGridClass = gridController.getKeyFromSize(gridController.getGridSize())
-		console.log('currGrideClass', currGridClass)
 		canvas.classList.add(currGridClass)
 
 		mainContainer.prepend(canvas)
@@ -208,6 +230,9 @@ const displayController = (function () {
 		const mode = e.target.getAttribute('data-mode')
 		if (!mode) return
 		if (colorController.getMode() === mode) return
+		activeMode.classList.toggle('active')
+		activeMode = e.target
+		activeMode.classList.toggle('active')
 		colorController.setMode(mode)
 	}
 
