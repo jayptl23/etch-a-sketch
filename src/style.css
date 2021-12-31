@@ -8,10 +8,6 @@
 
 body {
 	background-color: rgb(203 213 225);
-	/* background-color: rgb(148 163 184); */
-	/* background-color: rgb(156 163 175); */
-	/* background-color: rgb(107 114 128); */
-	/* background-color: rgb(241 245 249); */
 	font-family: 'Press Start 2P', cursive;
 	color: rgb(126 34 206);
 }
@@ -39,7 +35,6 @@ h1 {
 
 .tile {
 	border: 1px solid black;
-	/* background-color: lightblue; */
 	background-color: rgb(243 244 246);
 }
 
@@ -81,13 +76,12 @@ button {
 	padding: 10px;
 	font-size: 12px;
 	font-family: 'Press Start 2P', cursive;
-	/* background-color: rgb(126 34 206); */
+	cursor: pointer;
 }
 
 .sizing > p {
 	text-align: center;
 	margin-bottom: 5px;
-	/* color: rgb(253 224 71); */
 }
 
 .mode > p {
@@ -96,8 +90,6 @@ button {
 }
 
 .active {
-	/* border: 5px solid red;
-	border-style: ridge; */
 	background-color: rgb(254 240 138);
 }
 
